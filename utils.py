@@ -1,5 +1,6 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import numpy as np
 
 def logsoftmax(x):
     xdev = x - tf.reduce_max(x, 1, keep_dims=True)
@@ -53,3 +54,41 @@ def plot_boundaries():
     plt.subplot(133)
     plt.plot([j*params_dnn['gamma'] for j in jls])
     plt.plot(xls)
+
+    
+def grid_x(X):
+    # [-1, 1] -> [0,255]
+    if isinstance(X.flatten()[0], np.floating):
+        X = ((X + 1.) * 127.5).astype('uint8')
+
+    n_samples = X.shape[0]
+    rows = int(np.sqrt(n_samples))
+    while n_samples % rows != 0:
+        rows -= 1
+
+    nh, nw = rows, n_samples // rows
+
+    if X.ndim == 2:
+        X = np.reshape(X, (X.shape[0], int(np.sqrt(X.shape[1])), int(np.sqrt(X.shape[1]))))
+
+    if X.ndim == 4:
+        h, w = X[0].shape[:2]
+        img = np.zeros((h * nh, w * nw, 3))
+    elif X.ndim == 3:
+        h, w = X[0].shape[:2]
+        img = np.zeros((h * nh, w * nw))
+
+    for n, x in enumerate(X):
+        j = n // nw
+        i = n % nw
+        img[j * h:j * h + h, i * w:i * w + w] = x
+
+    return img
+
+def show_digits(digits_flatten):
+    X = grid_x(digits_flatten.reshape([-1,28,28]))
+    plt.imshow(X,cmap='gray')
+    plt.axis('off')
+    
+    
+  
