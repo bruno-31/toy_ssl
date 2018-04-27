@@ -96,6 +96,8 @@ def generator(z_inp, is_training=False, getter=None, reuse=False):
                                              kernel_initializer=init_kernel,
                                              name='conv')
             net = tf.tanh(net, name='tanh')
+#             net = tf.sigmoid(net)
+
             make_histogram_summary(net)
 
         generator_sum = tf.summary.merge_all('generator')
