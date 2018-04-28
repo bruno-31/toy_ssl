@@ -89,6 +89,3 @@ def show_digits(digits_flatten):
     X = grid_x(digits_flatten.reshape([-1,28,28]))
     plt.imshow(X,cmap='gray')
     plt.axis('off')
-    
-    
-  

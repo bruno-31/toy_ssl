@@ -95,8 +95,8 @@ def generator(z_inp, is_training=False, getter=None, reuse=False):
                                              padding='same',
                                              kernel_initializer=init_kernel,
                                              name='conv')
-            net = tf.tanh(net, name='tanh')
-#             net = tf.sigmoid(net)
+#             net = tf.tanh(net, name='tanh')
+            net = tf.sigmoid(net)
 
             make_histogram_summary(net)
 
@@ -117,7 +117,7 @@ def discriminator(x_inp, is_training=False, getter=None, reuse=False):
         intermediate_layer (tensor): intermediate layer for feature matching
     """
     with tf.variable_scope('discriminator', reuse=reuse, custom_getter=getter):
-        x_inp = tf.reshape(x_inp,[-1,28,28,1])
+#         x_inp = tf.reshape(x_inp,[-1,28,28,1])
         name_net = 'layer_1'
         with tf.variable_scope(name_net):
             net = tf.layers.conv2d(x_inp,
