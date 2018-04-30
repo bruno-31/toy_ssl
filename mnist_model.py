@@ -176,22 +176,27 @@ def discriminator(x_inp, is_training=False, getter=None, reuse=False):
         #     make_histogram_summary(net)
 
         intermediate_layer = net
-
-        name_net = 'layer_5'
-        with tf.variable_scope(name_net):
-            net = tf.layers.conv2d(net,
-                           filters=1,
-                           kernel_size=4,
-                           strides=1,
-                           padding='valid',
-                           kernel_initializer=init_kernel,
-                           name='conv')
-
-            make_histogram_summary(net)
-
+        print(net)
+        
+        net = tf.reshape(net,[-1,4,4,512])
+        net = tf.layers.dense(net,1)
         net = tf.squeeze(net)
 
-        discriminator_sum = tf.summary.merge_all('discriminator')
+#         name_net = 'layer_5'
+#         with tf.variable_scope(name_net):
+#             net = tf.layers.conv2d(net,
+#                            filters=1,
+#                            kernel_size=4,
+#                            strides=1,
+#                            padding='valid',
+#                            kernel_initializer=init_kernel,
+#                            name='conv')
+
+#             make_histogram_summary(net)
+
+#         net = tf.squeeze(net)
+
+#         discriminator_sum = tf.summary.merge_all('discriminator')
 
         return net
 
