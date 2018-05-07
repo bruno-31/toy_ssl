@@ -82,8 +82,8 @@ def discriminator(inputs, is_training=False, reuse=False, name='discriminator'):
 def lrelu(x,alpha=0.1):
     return tf.nn.leaky_relu(x,alpha=alpha)
 
-def cnn(x, is_training):
-    with tf.variable_scope("classifier", reuse=tf.AUTO_REUSE):
+def cnn(x, is_training,getter=None):
+    with tf.variable_scope("classifier", reuse=tf.AUTO_REUSE,custom_getter=getter):
         x = lrelu(l.batch_normalization(l.conv2d(x,96,3,padding='same'),training=is_training))
         x = lrelu(l.batch_normalization(l.conv2d(x,96,3,padding='same'),training=is_training))
         x = lrelu(l.batch_normalization(l.conv2d(x,96,3,padding='same'),training=is_training))

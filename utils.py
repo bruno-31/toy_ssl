@@ -2,6 +2,12 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+def ema_getter(getter, name, *args, **kwargs):
+    var = getter(name, *args, **kwargs)
+    ema_var = ema.average(var)
+    return ema_var if ema_var else var 
+
 def kl_divergence_with_logit(q_logit, p_logit):
     q = tf.nn.softmax(q_logit)
     qlogq = tf.reduce_mean(tf.reduce_sum(q * logsoftmax(q_logit), 1))
