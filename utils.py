@@ -95,3 +95,8 @@ def show_digits(digits_flatten):
     X = grid_x(digits_flatten.reshape([-1,28,28]))
     plt.imshow(X,cmap='gray')
     plt.axis('off')
+    
+def show_cifar(x):
+    X = grid_x(x)
+    plt.imshow(X/255.)
+    plt.axis('off')
