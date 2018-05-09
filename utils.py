@@ -20,11 +20,11 @@ def logsoftmax(x):
     return lsm
 
 def accuracy(logit, y):
-    pred = tf.to_float(tf.greater(logit,0.))
+    pred = tf.to_float(tf.greater(logit,0.5))
     return tf.reduce_mean(tf.to_float(tf.equal(pred,tf.to_float(y))))
 
 def prediction(logit):
-    pred = tf.to_float(tf.greater(logit,0.))
+    pred = tf.to_float(tf.greater(logit,0.5))
     return pred
 
 def scatter_2_class(testx,pred,**kwargs):

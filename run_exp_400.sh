@@ -1,10 +1,23 @@
-python train_decoupled_cifar.py --logdir log_decoupled_400lbl/ --gamma 0.005 --epsilon 1. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 400
+path=./log_decoupled_400lbl
+script=train_decoupled_cifar.py
 
-python train_decoupled_cifar.py --logdir log_decoupled_400lbl/ --gamma 0.005 --epsilon 2. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 400
+#python $script --logdir $path/g5e-3_e10_seed10 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 800 --large False
 
-python train_decoupled_cifar.py --logdir log_decoupled_400lbl/ --gamma 0.005 --epsilon 5. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 400
+python $script --logdir $path/vanilla_seed10 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 500 --large False --vanilla True
 
-python train_decoupled_cifar.py --logdir log_decoupled_400lbl/ --gamma 0.005 --epsilon 1. --eta 0.2 --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 400
 
-python train_decoupled_cifar.py --logdir log_decoupled_400lbl/ --gamma 0.001 --epsilon 1. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 400
+python $script --logdir $path/g5e-3_e10_seed20 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 500 --large False --seed 20
+
+python $script --logdir $path/vanilla_seed20 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 500 --large False --vanilla True --seed 20
+
+
+python $script --logdir $path/g5e-3_e10_seed30 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 500 --large False --seed 30
+
+python $script --logdir $path/vanilla_seed30 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 500 --large False --vanilla True --seed 30
+
+
+python $script --logdir $path/g5e-3_e10_seed40 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 500 --large False --seed 40
+
+python $script --logdir $path/vanilla_seed40 --gamma 0.005 --epsilon 10. --eta 1. --data_dir /tmp/data/cifar-10-python --labeled 400 --epoch 500 --large False --vanilla True --seed 40
+
 

@@ -3,9 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm_notebook as tqdm
 import os
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
 from cifar_model import generator,discriminator
-from cifar_model import convnet as cnn
 import utils
 from data import cifar10_input
 
@@ -25,9 +24,13 @@ flags.DEFINE_float('epsilon', 5., 'learning_rate[0.003]')
 flags.DEFINE_float('eta', 1., 'learning_rate[0.003]')
 flags.DEFINE_float('gamma',5, 'learning_rate[0.003]')
 
-flags.DEFINE_float('ema', 0.999, 'exp moving average for inference [0.9999]')
+flags.DEFINE_float('ema', 0.995, 'exp moving average for inference [0.9999]')
 flags.DEFINE_string('logdir', './log/cifar', 'log directory')
 flags.DEFINE_string('data_dir', '/tmp/data/cifar-10-python', 'data directory')
+
+flags.DEFINE_boolean('large', False, 'enable manifold reg')
+flags.DEFINE_boolean('vanilla', False, 'enable manifold reg')
+
 # flags.DEFINE_integer('seed', 10, 'seed numpy')
 # flags.DEFINE_integer('seed_data', 10, 'seed data')
 # flags.DEFINE_integer('labeled', 400, 'labeled data per class')
@@ -62,9 +65,17 @@ def main(_):
     print("")
     if not os.path.exists(FLAGS.logdir):
         os.makedirs(FLAGS.logdir)
-    filename = "gamma"+str(FLAGS.gamma)+"_epsilon"+str(FLAGS.epsilon)+"_eta"+str(FLAGS.eta)
-    print('filename:   '+filename)
+
     rng = np.random.RandomState(FLAGS.seed)  # seed labels
+
+    if FLAGS.large:
+        from cifar_model import convnet as cnn
+        filename = "large_"+"gamma" + str(FLAGS.gamma) + "_epsilon" + str(FLAGS.epsilon) + "_eta" + str(FLAGS.eta)
+        print('filename:   ' + filename)
+    else:
+        from cifar_model import cnn
+        filename = "small_"+"gamma" + str(FLAGS.gamma) + "_epsilon" + str(FLAGS.epsilon) + "_eta" + str(FLAGS.eta)
+        print('filename:   ' + filename)
 
     (trainx, trainy), (testx, testy) = tf.keras.datasets.cifar10.load_data()
     # trainx, trainy = cifar10_input._get_dataset(FLAGS.data_dir, 'train')  # float [-1 1] images
@@ -122,7 +133,9 @@ def main(_):
     with tf.control_dependencies(update_ops_dis):
         traind = optimizer.minimize(loss_d, var_list=disc_vars)
 
-    sess = tf.InteractiveSession()
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    sess = tf.Session(config=config)
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
 
@@ -157,7 +170,12 @@ def main(_):
     manifold = tf.reduce_sum(tf.sqrt(tf.square(logits_z1 - logits_adv) + 1e-8), axis=1)
     manifold_loss = tf.reduce_mean(manifold)
 
-    loss = xloss + FLAGS.gamma * manifold_loss
+    if FLAGS.vanilla:
+        loss = xloss
+        print('vanille')
+    else:
+        print('mani reg')
+        loss = xloss + FLAGS.gamma * manifold_loss
 
     with tf.variable_scope("adam", reuse=tf.AUTO_REUSE):
         global_step = tf.Variable(0, name='global_step', trainable=False)
@@ -207,7 +225,7 @@ def main(_):
     init_op = tf.variables_initializer(var_list=var)
 
     sess.run(init_op)
-    writer = tf.summary.FileWriter(os.path.join(FLAGS.logdir,filename), sess.graph)
+    writer = tf.summary.FileWriter(FLAGS.logdir, sess.graph)
 
     for epoch in tqdm(range(FLAGS.epoch)):
         inds = rng.permutation(trainx.shape[0])
