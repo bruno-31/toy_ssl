@@ -100,3 +100,28 @@ def cnn(x, is_training,getter=None):
         x = tf.squeeze(l.average_pooling2d(x,6,6))# global avg pool
         x = l.dense(x,10)
         return x
+
+def gaussian_noise_layer(input_layer, std, deterministic):
+    noise = tf.random_normal(shape=tf.shape(input_layer), mean=0.0, stddev=std, dtype=tf.float32)
+    y= tf.cond(deterministic, lambda :input_layer, lambda :input_layer+noise)
+    return y
+
+def convnet(x, is_training,getter=None):
+    with tf.variable_scope("classifier", reuse=tf.AUTO_REUSE,custom_getter=getter):
+        # x = gaussian_noise_layer(x, 0.15, deterministic=is_training)
+        x = lrelu(l.batch_normalization(l.conv2d(x,128,3,padding='same'),training=is_training))
+        x = lrelu(l.batch_normalization(l.conv2d(x,128,3,padding='same'),training=is_training))
+        x = lrelu(l.batch_normalization(l.conv2d(x,128,3,padding='same'),training=is_training))
+        x = l.max_pooling2d(x,2,2)
+        x = l.dropout(x,training=is_training)
+        x = lrelu(l.batch_normalization(l.conv2d(x,256,3,padding='same'),training=is_training))
+        x = lrelu(l.batch_normalization(l.conv2d(x,256,3,padding='same'),training=is_training))
+        x = lrelu(l.batch_normalization(l.conv2d(x,256,3,padding='same'),training=is_training))
+        x = l.max_pooling2d(x,2,2)
+        x = l.dropout(x,training=is_training)
+        x = lrelu(l.batch_normalization(l.conv2d(x,512,3,padding='valid'),training=is_training))
+        x = lrelu(l.batch_normalization(l.conv2d(x,256,1,padding='same'),training=is_training))
+        x = lrelu(l.batch_normalization(l.conv2d(x,128,1,padding='same'),training=is_training))
+        x = tf.squeeze(l.average_pooling2d(x,6,6))# global avg pool
+        x = l.dense(x,10)
+        return x
